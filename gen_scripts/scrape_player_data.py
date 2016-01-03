@@ -3,6 +3,7 @@ from string import ascii_lowercase
 from bs4 import BeautifulSoup as BS
 import sys
 import json
+import re
 
 '''
 This script generates all player data into a javascript table
@@ -12,22 +13,40 @@ allPlayers[0] = ['Kobe', 'Bryant', 1997, 2016, 'G-F', '6-6', 212, 'August 23, 19
 allPlayers[1] = ['LeBron', 'James', 2004, 2016, 'F-G', '6-8', 250, 'December 30, 1984', None, 'j/jamesle01.html']
 '''
 
-base_url = 'http://www.basketball-reference.com/players/' # append letter from 'a' to 'z'
-			# 'First', 'Last', Start, To, 'Pos', 'Ht', Wt, 'Birthdate', College, 'url'
-templateOrig = "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}]," # <- this one is fastest
+base_url = 'http://www.basketball-reference.com' # append letter from 'a' to 'z'
+base_img_url = 'http://d2cwpp38twqe55.cloudfront.net/images-011/players/' #all players have this base url + player id + .jpg or .png
+def getImgUrlAndTotalPtsFromPlayerUrl(playerId):
+	playerPageUrl = base_url + '/players/' + playerId[0] + '/' + playerId + '.html'
+	with ur.urlopen(playerPageUrl) as playerurl:
+		s = playerurl.read()
+
+	soup = BS(s, "html.parser")
+
+	sources = [x['src'] for x in soup.findAll('img') if re.search(playerId, x['src'])]
+	if len(sources) > 0:
+		imgtype = json.dumps(sources[0][-3:]) # returns either png or jpg, since base urls are same
+	else:
+		imgtype = 'null'
+
+	careerTotalTds = soup('table', {'id' : 'totals'})[0].tfoot('tr')[0]('td')
+	pts = careerTotalTds[-1].string
+	return [imgtype, pts]
+
+
+			# 'First', 'Last', Start, To, 'Pos', 'Ht', Wt, 'Birthdate', College, 'url', 'img url', careerpts
+templateOrig = "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}]," # <- this one is fastest for js to initialize
 
 print("var start = new Date().getTime();")
 print("var allPlayers = [")
 playerIdx = 0
 for c in ascii_lowercase:
-	url = base_url + c
+	url = base_url + '/players/' + c
 	with ur.urlopen(url) as url:
 		s = url.read()
 
 	soup = BS(s, "html.parser")
 
 	try:
-
 		for row in soup('table', {'id' : 'players'})[0].tbody('tr'):
 			tds = row('td')
 			fullname = json.dumps(tds[0].a.string).replace("\"", "").split()  # First Last
@@ -35,7 +54,7 @@ for c in ascii_lowercase:
 			firstname =  json.dumps(fullname[0])
 			lastname = json.dumps(fullname[1])
 
-			playerLink = json.dumps(tds[0].a['href'])
+			playerId = re.findall('\/([a-zA-Z0-9]*)\.html', tds[0].a['href'])[0] #ex: lambje01, jamesle01
 			yrFrom = tds[1].string 
 			yrTo = tds[2].string
 			pos = tds[3].string
@@ -43,6 +62,7 @@ for c in ascii_lowercase:
 			wt = tds[5].string
 			birthdate = tds[6].string
 			college = tds[7].string
+			playerImgType, careerPts = getImgUrlAndTotalPtsFromPlayerUrl(playerId)
 
 			if (yrFrom == None):
 				yrFrom = 'null'
@@ -68,6 +88,8 @@ for c in ascii_lowercase:
 			else:
 				birthdate = json.dumps(birthdate)
 
+			playerId = json.dumps(playerId)
+
 			# 'First', 'Last', Start, To, 'Pos', 'Ht', Wt, 'Birthdate', College, 'url'
 			#template = "allPlayers[{0}]= [   {1}, {2}, {3}, {4}, '{5}', '{6}', {7}, '{8}', {9}, '{10}']"
 			#templatePush = "allPlayers.push([{0}, {1}, {2}, {3}, '{4}', '{5}', {6}, '{7}', {8}, '{9}'])"
@@ -76,11 +98,14 @@ for c in ascii_lowercase:
 
 			#print(template.format(playerIdx, firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, college, playerLink))
 			#print(templatePush.format(firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, college, playerLink))
-			print(templateOrig.format(firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, college, playerLink))
+			line = templateOrig.format(firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, 
+				college, playerId, playerImgType, careerPts)
+			print(line)
+			sys.stderr.write(str(playerIdx) + ": " + line + "\n")
 
 			playerIdx += 1
-			#if (playerIdx >= 2000):
-			#sys.exit(0)
+			#if (playerIdx >= 2):
+			#	sys.exit(0)
 	except IndexError:
 		continue
 
@@ -88,3 +113,5 @@ print("]")
 print("var end = new Date().getTime();")
 print("var time = end - start;")
 print("alert('Execution time: ' + time);")
+
+
