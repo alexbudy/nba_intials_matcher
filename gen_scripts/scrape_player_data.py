@@ -8,9 +8,9 @@ import re
 '''
 This script generates all player data into a javascript table
 var allPlayers = []
-				First, Last, Start, To, Pos, Ht, Birth, College, url
-allPlayers[0] = ['Kobe', 'Bryant', 1997, 2016, 'G-F', '6-6', 212, 'August 23, 1978', None, 'b/bryanko01.html']
-allPlayers[1] = ['LeBron', 'James', 2004, 2016, 'F-G', '6-8', 250, 'December 30, 1984', None, 'j/jamesle01.html']
+				First, Last, Start, To, Pos, Ht, Birth, College, playerid, img type = jpg/png/null, careerpts
+allPlayers[0] = ['Kobe', 'Bryant', 1997, 2016, 'G-F', '6-6', 212, 'August 23, 1978', None, 'bryanko01']
+allPlayers[1] = ['LeBron', 'James', 2004, 2016, 'F-G', '6-8', 250, 'December 30, 1984', None, 'jamesle01']
 '''
 
 base_url = 'http://www.basketball-reference.com' # append letter from 'a' to 'z'
@@ -38,7 +38,8 @@ templateOrig = "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}],"
 
 print("var start = new Date().getTime();")
 print("var allPlayers = [")
-playerIdx = 0
+playerIdx = 0  # this index corresponds with id of allPlayers JS dictionary
+
 for c in ascii_lowercase:
 	url = base_url + '/players/' + c
 	with ur.urlopen(url) as url:
@@ -94,10 +95,8 @@ for c in ascii_lowercase:
 			#template = "allPlayers[{0}]= [   {1}, {2}, {3}, {4}, '{5}', '{6}', {7}, '{8}', {9}, '{10}']"
 			#templatePush = "allPlayers.push([{0}, {1}, {2}, {3}, '{4}', '{5}', {6}, '{7}', {8}, '{9}'])"
 
-			# experiment with push() vs index - time & see difference
+			# experimented with push() vs index - time & see difference - fastest by far is direct initialization - just a few ms
 
-			#print(template.format(playerIdx, firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, college, playerLink))
-			#print(templatePush.format(firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, college, playerLink))
 			line = templateOrig.format(firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, 
 				college, playerId, playerImgType, careerPts)
 			print(line)

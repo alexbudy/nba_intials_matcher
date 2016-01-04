@@ -4323,6 +4323,7 @@ var allPlayers = [
 ["Bill", "Zopf", 1971, 1971, "G", "6-1", 170, "June 7, 1948", "Duquesne University", "zopfbi01", null, 118],
 ["Matt", "Zunic", 1949, 1949, "G-F", "6-3", 195, "December 19, 1919", "George Washington University", "zunicma01", null, 273],
 ]
-var end = new Date().getTime();
-var time = end - start;
-alert('Execution time: ' + time);
+
+//var end = new Date().getTime();
+//var time = end - start;
+//alert('Execution time: ' + time);
