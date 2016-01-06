@@ -3,11 +3,24 @@
 <title>
 See which NBA players share your initials
 </title>
+<script src="showPlayers.js"></script>
+<script src="initialsToPlayers.js"></script>
+<script src="allNbaPlayersList.js"></script>
 </head>
 
 <body>
 
+<h1>Which NBA Players have your intials?</h1>
 
+Type in your initials<br> First, Last. Ex: AB
+<input type="text" name="initials" id="initialsInput">
+<br>
+<input type="button" onclick="showPlayers()" value="Show me the players!">
+
+<span id="matchingPlayersList"></span>
+
+<br>
+<br>
 All data pulled from <a href="http://www.basketball-reference.com/">
 www.basketball-reference.com</a>, Jan 2016
 </body>
