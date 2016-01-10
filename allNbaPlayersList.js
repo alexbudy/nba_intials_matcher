@@ -1,4 +1,4 @@
-var start = new Date().getTime();
+//var start = new Date().getTime();
 var allPlayers = [
 ["Alaa", "Abdelnaby", 1991, 1995, "F-C", "6-10", 240, "June 24, 1968", "Duke University", "abdelal01", "jpg", 1465],
 ["Zaid", "Abdul-Aziz", 1969, 1978, "C-F", "6-9", 235, "April 7, 1946", "Iowa State University", "abdulza01", null, 4557],
