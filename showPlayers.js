@@ -1,7 +1,17 @@
+hideTable()
+function hideTable() {
+	$('#playersTable').hide()
+}
+
 // called when button is clicked
 function showPlayers() {
 	var typedInitials = document.getElementById('initialsInput').value
 	var playerList = initialsToPlayers[typedInitials]
+
+	if (playerList == null || playerList.length == 0) {
+		hideTable()
+		return
+	}
 
 	playerList.sort(function(first, second) {
 		var p1 = allPlayers[first]
@@ -20,17 +30,60 @@ function showPlayers() {
 
 		return secondScore - firstScore
 	});
-
+	
+	$('#playersTable').show()
 	// clear table first
 	$('#playersTable').find("tr:gt(0)").remove();
 
 	// now add rows
 	for (var i = 0; i < playerList.length; i++) {
 		var player = allPlayers[playerList[i]]
-		console.log(player)
-		$('#playersTable tr:last').after("<tr><td>" + player[0] +"</td><td>" + 
-			player[1] + "</td><td><img height=\"100\" width=\"100\" src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
-			+ player[9] + "." + player[10] + "\"></td></tr>")
+		$('#playersTable tr:last').after(genRowStr(player))
 	}
 }
 
+function genRowStr(player) {
+	s = "<tr>" + genFullNameCell(player) + genYrsPlayedCell(player) +
+	genPlayerStats(player) + genSimpleCell(player, 8) +	
+	genTeamsPlayedOn(player) + genSimpleCell(player, 11) + "</tr>"
+	return s
+}
+
+function genFullNameCell(player) {
+	if (player[10] != null) {
+		img = "<img src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
+			+ player[9] + "." + player[10] + "\"><br>"
+	} else {
+		img  = ""
+	}
+	return "<td>" + img + player[0] + " " + player[1] + "</td>"
+}
+
+function genYrsPlayedCell(player) {
+	return "<td>" + player[2] + " - " + player[3] + "</td>"
+}
+
+function genSimpleCell(player, idx) {
+	if (player[idx] == null) {
+		return "<td></td>"
+	} else {
+		return "<td>" + player[idx] + "</td>"
+	}
+}
+
+function genPlayerStats(player) {
+	return "<td>" + player[4] + " " + player[5] + "/" + player[6] + "</td>"
+}
+
+function genTeamsPlayedOn(player) {
+	return "<td>" + player[12] + "</td>"
+}
+
+function genPlayerImgCell(player) {
+	if (player[10] != null) {
+		return "<td><img src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
+			+ player[9] + "." + player[10] + "\"></td>"
+	} else {
+		return "<td></td>"
+	}
+}

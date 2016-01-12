@@ -15,7 +15,7 @@ allPlayers[1] = ['LeBron', 'James', 2004, 2016, 'F-G', '6-8', 250, 'December 30,
 
 base_url = 'http://www.basketball-reference.com' # append letter from 'a' to 'z'
 base_img_url = 'http://d2cwpp38twqe55.cloudfront.net/images-011/players/' #all players have this base url + player id + .jpg or .png
-def getImgUrlAndTotalPtsFromPlayerUrl(playerId):
+def getImgUrlTotalPtsTeamsPlayedFromPlayerUrl(playerId):
 	playerPageUrl = base_url + '/players/' + playerId[0] + '/' + playerId + '.html'
 	with ur.urlopen(playerPageUrl) as playerurl:
 		s = playerurl.read()
@@ -28,13 +28,30 @@ def getImgUrlAndTotalPtsFromPlayerUrl(playerId):
 	else:
 		imgtype = 'null'
 
-	careerTotalTds = soup('table', {'id' : 'totals'})[0].tfoot('tr')[0]('td')
+	totalsTable = soup('table', {'id' : 'totals'})[0]
+	careerTotalTds = totalsTable.tfoot('tr')[0]('td')
 	pts = careerTotalTds[-1].string
-	return [imgtype, pts]
+
+	teamsRows = totalsTable.tfoot('tr')
+	allTeams = []
+	for idx in range(2, len(teamsRows)):
+		team = teamsRows[idx]('td')[2].string
+		if team == None:
+			continue
+		allTeams.append(team)
+
+	#special case
+	if len(allTeams) == 0:
+		team = totalsTable.tbody('tr')[-1]('td')[2].string
+		if team == None:
+			continue
+		allTeams.append(team)
+
+	return [imgtype, pts, allTeams]
 
 
-			# 'First', 'Last', Start, To, 'Pos', 'Ht', Wt, 'Birthdate', College, 'url', 'img url', careerpts
-templateOrig = "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}]," # <- this one is fastest for js to initialize
+			# 'First', 'Last', Start, To, 'Pos', 'Ht', Wt, 'Birthdate', College, 'url', 'img url', careerpts, 'teams'
+templateOrig = "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}]," # <- this one is fastest for js to initialize
 
 print("var start = new Date().getTime();")
 print("var allPlayers = [")
@@ -63,7 +80,7 @@ for c in ascii_lowercase:
 			wt = tds[5].string
 			birthdate = tds[6].string
 			college = tds[7].string
-			playerImgType, careerPts = getImgUrlAndTotalPtsFromPlayerUrl(playerId)
+			playerImgType, careerPts, teamsPlayedOn = getImgUrlTotalPtsTeamsPlayedFromPlayerUrl(playerId)
 
 			if (yrFrom == None):
 				yrFrom = 'null'
@@ -98,7 +115,7 @@ for c in ascii_lowercase:
 			# experimented with push() vs index - time & see difference - fastest by far is direct initialization - just a few ms
 
 			line = templateOrig.format(firstname, lastname, yrFrom, yrTo, pos, ht, wt, birthdate, 
-				college, playerId, playerImgType, careerPts)
+				college, playerId, playerImgType, careerPts, str(teamsPlayedOn))
 			print(line)
 			sys.stderr.write(str(playerIdx) + ": " + line + "\n")
 
