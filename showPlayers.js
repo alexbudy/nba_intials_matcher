@@ -1,11 +1,29 @@
 hideTable()
+
+// restrict input
+$(document).ready(function() {
+    $('#initialsInput').keypress(function(key) {
+    	var typed = $('#initialsInput').val() +  String.fromCharCode(key.keyCode)
+    	if (typed.length == 0) return;
+        var re = /^[A-Z],?[A-Z]?$/i;
+        if (re.exec(typed) == null) return false;
+    })
+});
+
+$('#initialsInput').on('keyup', function(e) {
+    if (e.keyCode === 13) {
+        $('#submitBtn').click();
+    }
+});
+
 function hideTable() {
 	$('#playersTable').hide()
 }
 
 // called when button is clicked
 function showPlayers() {
-	var typedInitials = document.getElementById('initialsInput').value
+	var typedInitials = document.getElementById('initialsInput').value.replace(',', '').toUpperCase()
+	console.log(typedInitials)
 	var playerList = initialsToPlayers[typedInitials]
 
 	if (playerList == null || playerList.length == 0) {
@@ -50,13 +68,14 @@ function genRowStr(player) {
 }
 
 function genFullNameCell(player) {
+	var url = 'http://www.basketball-reference.com/players/' + player[9][0] + "/" + player[9] + ".html"
 	if (player[10] != null) {
 		img = "<img src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
 			+ player[9] + "." + player[10] + "\"><br>"
 	} else {
 		img  = ""
 	}
-	return "<td>" + img + player[0] + " " + player[1] + "</td>"
+	return "<td><a href=\"" + url + "\">" + img + player[0] + " " + player[1] + "</a></td>"
 }
 
 function genYrsPlayedCell(player) {
@@ -76,7 +95,7 @@ function genPlayerStats(player) {
 }
 
 function genTeamsPlayedOn(player) {
-	return "<td>" + player[12] + "</td>"
+	return "<td>" + String(player[12]).replace(/,/g, '<br>') + "</td>"
 }
 
 function genPlayerImgCell(player) {

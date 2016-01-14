@@ -3,19 +3,20 @@
 <title>
 See which NBA players share your initials
 </title>
+<link rel="stylesheet" type="text/css" href="nba_initials.css">
 <script src="jquery-2.2.0.min.js"></script>
-<script src="initialsToPlayers.js"></script>
 <script src="allNbaPlayersList.js"></script>
+<script src="initialsToPlayers.js"></script>
 </head>
 
 <body>
 
 <h1>Which NBA Players have your intials?</h1>
 
-Type in your initials<br> First, Last.
-<input type="text" name="initials" id="initialsInput">
+Type in your initials: first last.<br>
+<input type="text" name="initials" id="initialsInput" maxlength="3" autofocus>
 <br>
-<input type="submit" onclick="showPlayers()" value="Show me the players!">
+<input type="submit" id="submitBtn" onclick="showPlayers()" value="Show me the players!">
 
 <span id="matchingPlayersList"></span>
 
