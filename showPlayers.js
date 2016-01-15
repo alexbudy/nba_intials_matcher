@@ -23,7 +23,6 @@ function hideTable() {
 // called when button is clicked
 function showPlayers() {
 	var typedInitials = document.getElementById('initialsInput').value.replace(',', '').toUpperCase()
-	console.log(typedInitials)
 	var playerList = initialsToPlayers[typedInitials]
 
 	if (playerList == null || playerList.length == 0) {
@@ -95,7 +94,12 @@ function genPlayerStats(player) {
 }
 
 function genTeamsPlayedOn(player) {
-	return "<td>" + String(player[12]).replace(/,/g, '<br>') + "</td>"
+	s = "<td>"
+	for (var i = 0; i < player[12].length; i++) {
+		s += teams[player[12][i]][0] + "<br>"
+	}
+	s += "</td>"
+	return s
 }
 
 function genPlayerImgCell(player) {

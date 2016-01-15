@@ -692,22 +692,3 @@ var items = Object.keys(counts).map(function(key) {
 items.sort(function(first, second) {
     return second[1] - first[1];
 });
-
-var s = new Set()
-for (p in allPlayers) {
-	teams = allPlayers[p][12]
-	for (t in teams) {
-		s.add(teams[t])
-	}
-}
-
-console.log(s)
-iter = s.values()
-s = ""
-kv = iter.next()
-while(!kv.done) {
-	s += kv.value + ","
-	kv = iter.next()
-}
-
-console.log(s)
