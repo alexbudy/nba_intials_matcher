@@ -1,11 +1,28 @@
 hideTable()
 
+
+var re = /^[A-Z],?[A-Z]?$/i;
+var re2 = /^[A-Z],?[A-Z]$/i;
+
 // restrict input
 $(document).ready(function() {
+	var search = window.location.search
+
+	if (search.length > 0) {
+		var kv = search.substr(1).split('=')
+		if (kv.length==2 && kv[0] == 'initials') {
+			if (re2.exec(kv[1]) != null) {
+				$('#initialsInput').val(kv[1])
+				showPlayers(false)
+			} else {
+				window.location.search = ""
+			}
+		}
+	}
+
     $('#initialsInput').keypress(function(key) {
     	var typed = $('#initialsInput').val() +  String.fromCharCode(key.keyCode)
     	if (typed.length == 0) return;
-        var re = /^[A-Z],?[A-Z]?$/i;
         if (re.exec(typed) == null) return false;
     })
 });
@@ -21,12 +38,20 @@ function hideTable() {
 }
 
 // called when button is clicked
-function showPlayers() {
-	var typedInitials = document.getElementById('initialsInput').value.replace(',', '').toUpperCase()
+function showPlayers(setURL) {
+	var enteredInits = document.getElementById('initialsInput').value.toUpperCase()
+
+	if (setURL) {
+		window.location.assign("nba_initials.html?initials=" + enteredInits)
+	}
+
+
+	var typedInitials = enteredInits.replace(',', '')
 	var playerList = initialsToPlayers[typedInitials]
 
 	if (playerList == null || playerList.length == 0) {
 		hideTable()
+		// TODO show message here
 		return
 	}
 
