@@ -1,7 +1,121 @@
+body {
+	text-align: center;
+}
+
+.main-text {
+	font-size: 130%;
+}
+
+#footer {
+	text-align: center;
+}
+
 #initialsInput {
-	text-transform:uppercase
+	text-align: center;
+	font-size: 130%;
+	text-transform:uppercase;
+	margin-top: 5px;
+}
+
+#submitBtn {
+	margin-top: 5px;
+	font-size: 130%;
 }
 
 tr:nth-child(even) {
-    background-color: #ffd1dc;
+    background-color: #e7e7e7;
+}
+
+#noMatchingPlayers {
+	text-align: center;
+	font-size: 160%;
+}
+
+td:first-child{
+    -moz-border-radius:10px 0 0 10px;
+    -webkit-border-radius:10px 0 0 10px;
+}
+td:last-child{
+    -moz-border-radius:0 10px 10px 0;
+    -webkit-border-radius:0 10px 10px 0;
+}
+
+[data-tip] {
+	position:relative;
+
+}
+[data-tip]:before {
+	content:'';
+	/* hides the tooltip when not hovered */
+	display:none;
+	content:'';
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid #1a1a1a;	
+	position:absolute;
+	top:30px;
+	left:35px;
+	z-index:8;
+	font-size:0;
+	line-height:0;
+	width:0;
+	height:0;
+}
+[data-tip]:after {
+	display:none;
+	content:attr(data-tip);
+	position:absolute;
+	top:35px;
+	left:0px;
+	padding:5px 8px;
+	background:#1a1a1a;
+	color:#fff;
+	z-index:9;
+	font-size: 0.75em;
+	height:18px;
+	line-height:18px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	white-space:nowrap;
+	word-wrap:normal;
+}
+[data-tip]:hover:before,
+[data-tip]:hover:after {
+	display:block;
+}
+
+#playersTable tr:first-child {
+	text-align: center;
+	font-weight: bold;
+	font-size: 120%;
+}
+
+table {
+}
+
+td {
+	text-align: center;
+}
+
+td a {
+	font-size: 120%;
+}
+
+.playerLinks:link  {
+    color: green;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.playerLinks:visited  {
+    color: green;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.playerLinks:hover {
+    color: red;
+    background-color: transparent;
+    text-decoration: none;
 }

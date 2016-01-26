@@ -1,8 +1,8 @@
 hideTable()
 
 
-var re = /^[A-Z],?[A-Z]?$/i;
-var re2 = /^[A-Z],?[A-Z]$/i;
+var re = /^[A-Z*],?[A-Z*]?$/i;
+var re2 = /^[A-Z*],?[A-Z*]$/i;
 
 // restrict input
 $(document).ready(function() {
@@ -40,18 +40,36 @@ function hideTable() {
 // called when button is clicked
 function showPlayers(setURL) {
 	var enteredInits = document.getElementById('initialsInput').value.toUpperCase()
+	var typedInitials = enteredInits.replace(',', '')
+
+	if (typedInitials.length != 2) {
+		hideTable()
+		$('#noMatchingPlayers').html('Please enter two characters')
+
+		return
+	}
+
+	if (typedInitials == "**") {
+		hideTable()
+		
+		$('#noMatchingPlayers').html('Only one wildcard (*) character with a letter is permitted')
+
+		return
+	}
 
 	if (setURL) {
 		window.location.assign("nba_initials.html?initials=" + enteredInits)
 	}
 
 
-	var typedInitials = enteredInits.replace(',', '')
-	var playerList = initialsToPlayers[typedInitials]
+	var playerList = playersFromInitials(typedInitials)
 
 	if (playerList == null || playerList.length == 0) {
 		hideTable()
-		// TODO show message here
+
+		
+		$('#noMatchingPlayers').html('There are no matching NBA players for those initials :(')
+
 		return
 	}
 
@@ -84,6 +102,38 @@ function showPlayers(setURL) {
 	}
 }
 
+// take into account wildcards
+// acceptable inputs: *B, B*, AB
+// not acceptable: *, ** -- caught before function
+function playersFromInitials(initials) {
+	if (initials == '**' || initials == '*') {
+		return
+	}
+
+	var wildCardIdx = initials.indexOf('*')
+	if (wildCardIdx == -1) {
+		return initialsToPlayers[initials]
+	} else { 
+		var allPlayers = []
+		var letters = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split("")
+		if (wildCardIdx == 0) { // means input is ex: *B
+			for (var i = 0; i < letters.length; i++) {
+				var playerSubset = initialsToPlayers[letters[i] + initials[1]]
+				allPlayers = allPlayers.concat(playerSubset)
+			}
+
+		} else { // input ex: B*
+			for (var i = 0; i < letters.length; i++) {
+				var playerSubset = initialsToPlayers[initials[0] + letters[i]]
+				allPlayers = allPlayers.concat(playerSubset)
+			}
+		}
+
+		return allPlayers
+	}
+
+}
+
 function genRowStr(player) {
 	s = "<tr>" + genFullNameCell(player) + genYrsPlayedCell(player) +
 	genPlayerStats(player) + genSimpleCell(player, 8) +	
@@ -99,7 +149,7 @@ function genFullNameCell(player) {
 	} else {
 		img  = ""
 	}
-	return "<td><a href=\"" + url + "\">" + img + player[0] + " " + player[1] + "</a></td>"
+	return "<td><a class=\"playerLinks\" href=\"" + url + "\">" + img + player[0] + " " + player[1] + "</a></td>"
 }
 
 function genYrsPlayedCell(player) {
@@ -115,23 +165,14 @@ function genSimpleCell(player, idx) {
 }
 
 function genPlayerStats(player) {
-	return "<td>" + player[4] + " " + player[5] + "/" + player[6] + "</td>"
+	return "<td class=\"playerStatsCells\">" + player[4] + " " + player[5] + "/" + player[6] + "</td>"
 }
 
 function genTeamsPlayedOn(player) {
-	s = "<td>"
+	s = "<td class=\"teamsPlayedOnCells\">"
 	for (var i = 0; i < player[12].length; i++) {
 		s += teams[player[12][i]][0] + "<br>"
 	}
 	s += "</td>"
 	return s
-}
-
-function genPlayerImgCell(player) {
-	if (player[10] != null) {
-		return "<td><img src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
-			+ player[9] + "." + player[10] + "\"></td>"
-	} else {
-		return "<td></td>"
-	}
 }
