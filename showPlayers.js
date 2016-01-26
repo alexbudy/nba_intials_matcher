@@ -147,7 +147,7 @@ function genRowStr(player) {
 function genFullNameCell(player, bold) {
 	var url = 'http://www.basketball-reference.com/players/' + player[9][0] + "/" + player[9] + ".html"
 	if (player[10] != null) {
-		img = "<img src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
+		img = "<img class= \"playerImage\" src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
 			+ player[9] + "." + player[10] + "\"><br>"
 	} else {
 		img  = ""
@@ -197,8 +197,8 @@ function genPlayerStats(player, bold) {
 
 function genTeamsPlayedOn(player, bold) {
 	s = "<td class=\"teamsPlayedOnCells\">"
-	for (var i = 0; i < player[12].length; i++) {
-		if (bold && i == 0) {
+	for (var i = (player[12].length - 1); i >= 0; i--) {
+		if (false && i == (player[12].length - 1)) { // not sure which team is active team for each player, so ignore bold for now
 			s += "<b>" + teams[player[12][i]][0] + "</b><br>"
 		} else {
 			s += teams[player[12][i]][0] + "<br>"
