@@ -3,7 +3,7 @@ body {
 }
 
 .main-text {
-	font-size: 130%;
+	font-size: 120%;
 }
 
 #footer {
@@ -92,24 +92,28 @@ td:last-child{
 }
 
 table {
+	margin-left: auto;
+	margin-right: auto;
+	width: 80%;
 }
 
 td {
+	font-size: 110%;
 	text-align: center;
 }
 
 td a {
-	font-size: 120%;
+	font-size: 130%;
 }
 
 .playerLinks:link  {
-    color: green;
+    color: #494949;
     background-color: transparent;
     text-decoration: none;
 }
 
 .playerLinks:visited  {
-    color: green;
+    color: #494949;
     background-color: transparent;
     text-decoration: none;
 }

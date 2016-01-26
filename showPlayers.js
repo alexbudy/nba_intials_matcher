@@ -135,13 +135,16 @@ function playersFromInitials(initials) {
 }
 
 function genRowStr(player) {
-	s = "<tr>" + genFullNameCell(player) + genYrsPlayedCell(player) +
-	genPlayerStats(player) + genSimpleCell(player, 8) +	
-	genTeamsPlayedOn(player) + genSimpleCell(player, 11) + "</tr>"
-	return s
+	var bold = false;
+	if (player[3] == 2016) {
+		bold = true;
+	}
+	return "<tr>" + genFullNameCell(player, bold) + genYrsPlayedCell(player, bold) +
+	genPlayerStats(player, bold) + genSimpleCell(player, 8) +	
+	genTeamsPlayedOn(player, bold) + getTotalPtsCell(player, bold) + "</tr>"
 }
 
-function genFullNameCell(player) {
+function genFullNameCell(player, bold) {
 	var url = 'http://www.basketball-reference.com/players/' + player[9][0] + "/" + player[9] + ".html"
 	if (player[10] != null) {
 		img = "<img src=\"http://d2cwpp38twqe55.cloudfront.net/images-011/players/" 
@@ -149,29 +152,57 @@ function genFullNameCell(player) {
 	} else {
 		img  = ""
 	}
-	return "<td><a class=\"playerLinks\" href=\"" + url + "\">" + img + player[0] + " " + player[1] + "</a></td>"
-}
-
-function genYrsPlayedCell(player) {
-	return "<td>" + player[2] + " - " + player[3] + "</td>"
-}
-
-function genSimpleCell(player, idx) {
-	if (player[idx] == null) {
-		return "<td></td>"
+	if (bold) {
+		return "<td>" + img + "<a class=\"playerLinks\" href=\"" + url + "\"><b>" + player[0] + " " + player[1] + "</b></a></td>"
 	} else {
-		return "<td>" + player[idx] + "</td>"
+		return "<td>" + img + "<a class=\"playerLinks\" href=\"" + url + "\">" + player[0] + " " + player[1] + "</a></td>"
 	}
 }
 
-function genPlayerStats(player) {
-	return "<td class=\"playerStatsCells\">" + player[4] + " " + player[5] + "/" + player[6] + "</td>"
+function genYrsPlayedCell(player, bold) {
+	if (bold) {
+		return "<td><b>" + player[2] + " - " + player[3] + "</b></td>"
+	} else {
+		return "<td>" + player[2] + " - " + player[3] + "</td>"
+	}
 }
 
-function genTeamsPlayedOn(player) {
+function getTotalPtsCell(player, bold) {
+	if (bold) {
+		return "<td><b>" + player[11] + "</b></td>"
+	} else {
+		return "<td>" + player[11] + "</td>"
+	}
+}
+
+function genSimpleCell(player, idx, bold) {
+	if (player[idx] == null) {
+		return "<td></td>"
+	} else {
+		if (bold) {
+			return "<td><b>" + player[idx] + "<b></td>"
+		} else {
+			return "<td>" + player[idx] + "</td>"
+		}
+	}
+}
+
+function genPlayerStats(player, bold) {
+	if (bold) {
+		return "<td class=\"playerStatsCells\"><b>" + player[4] + " " + player[5] + "/" + player[6] + "</b></td>"
+	} else {
+		return "<td class=\"playerStatsCells\">" + player[4] + " " + player[5] + "/" + player[6] + "</td>"
+	}
+}
+
+function genTeamsPlayedOn(player, bold) {
 	s = "<td class=\"teamsPlayedOnCells\">"
 	for (var i = 0; i < player[12].length; i++) {
-		s += teams[player[12][i]][0] + "<br>"
+		if (bold && i == 0) {
+			s += "<b>" + teams[player[12][i]][0] + "</b><br>"
+		} else {
+			s += teams[player[12][i]][0] + "<br>"
+		}
 	}
 	s += "</td>"
 	return s
