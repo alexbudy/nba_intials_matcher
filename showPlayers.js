@@ -41,12 +41,11 @@ $(document).ready(function() {
     	var initialsBox = $('#initialsInput')
     	var sStart = initialsBox[0].selectionStart
     	var sEnd = initialsBox[0].selectionEnd 
+    	var typed = initialsBox.val() +  String.fromCharCode(key.charCode)
 
     	if (sStart != sEnd) {
-    		typed = initialsBox.val().replaceBetween(sStart, sEnd, String.fromCharCode(key.keyCode))
-    	} else {
-    		typed = initialsBox.val() +  String.fromCharCode(key.keyCode)
-    	}
+    		typed = initialsBox.val().replaceBetween(sStart, sEnd, String.fromCharCode(key.charCode))
+    	} 
 
     	if (typed.length == 0) return;
         if (re.exec(typed) == null) return false;
@@ -59,8 +58,20 @@ $('#initialsInput').on('keyup', function(e) {
     }
 });
 
+$('#freqBreakdownUrl').on('click', function(e) {
+	hideTable();
+	$('#numberMatchingPlayers').hide()
+	$('#freqTable').show()
+})
+
 function hideTable() {
 	$('#playersTable').hide()
+}
+
+function showTable() {
+	$('#freqTable').hide()
+	$('#numberMatchingPlayers').show()
+	$('#playersTable').show()
 }
 
 // called when button is clicked
@@ -68,6 +79,7 @@ function showPlayers() {
 	var enteredInits = document.getElementById('initialsInput').value.toUpperCase()
 	var typedInitials = enteredInits.replace(',', '')
 
+	$('#numberMatchingPlayers').show()
 	if (typedInitials.length != 2) {
 		hideTable()
 		$('#numberMatchingPlayers').html('Please enter two characters')

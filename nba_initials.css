@@ -141,3 +141,13 @@ td a {
     background-color: transparent;
     text-decoration: none;
 }
+
+#freqBreakdownUrl { 
+	display:inline-block;
+	padding-bottom: 10px; 
+	font-size: 115%;
+	cursor: pointer; 
+	cursor: hand;
+	color: #8d281a;
+	border: 1;
+}
