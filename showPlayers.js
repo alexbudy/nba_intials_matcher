@@ -4,6 +4,25 @@ hideTable()
 var re = /^[A-Z*],?[A-Z*]?$/i;
 var re2 = /^[A-Z*],?[A-Z*]$/i;
 
+String.prototype.replaceBetween = function(start, end, what) {
+    return this.substring(0, start) + what + this.substring(end);
+};
+
+function setUrlWithInitials() {
+	var search = window.location.search
+
+	if (search.length > 0) {
+		var kv = search.substr(1).split('=')
+		if (kv.length==2 && kv[0] == 'initials') {
+			if (kv[1].toUpperCase() == $('#initialsInput').val().toUpperCase()) {
+				return
+			}
+		}
+	}
+
+	window.location.assign("nba_initials.html?initials=" + $('#initialsInput').val())
+}
+
 // restrict input
 $(document).ready(function() {
 	var search = window.location.search
@@ -11,17 +30,24 @@ $(document).ready(function() {
 	if (search.length > 0) {
 		var kv = search.substr(1).split('=')
 		if (kv.length==2 && kv[0] == 'initials') {
-			if (re2.exec(kv[1]) != null) {
+			//if (re2.exec(kv[1]) != null) {
 				$('#initialsInput').val(kv[1])
-				showPlayers(false)
-			} else {
-				window.location.search = ""
-			}
+				showPlayers()
+			//}
 		}
 	}
 
     $('#initialsInput').keypress(function(key) {
-    	var typed = $('#initialsInput').val() +  String.fromCharCode(key.keyCode)
+    	var initialsBox = $('#initialsInput')
+    	var sStart = initialsBox[0].selectionStart
+    	var sEnd = initialsBox[0].selectionEnd 
+
+    	if (sStart != sEnd) {
+    		typed = initialsBox.val().replaceBetween(sStart, sEnd, String.fromCharCode(key.keyCode))
+    	} else {
+    		typed = initialsBox.val() +  String.fromCharCode(key.keyCode)
+    	}
+
     	if (typed.length == 0) return;
         if (re.exec(typed) == null) return false;
     })
@@ -38,27 +64,21 @@ function hideTable() {
 }
 
 // called when button is clicked
-function showPlayers(setURL) {
+function showPlayers() {
 	var enteredInits = document.getElementById('initialsInput').value.toUpperCase()
 	var typedInitials = enteredInits.replace(',', '')
 
 	if (typedInitials.length != 2) {
 		hideTable()
-		$('#noMatchingPlayers').html('Please enter two characters')
-
+		$('#numberMatchingPlayers').html('Please enter two characters')
 		return
 	}
 
 	if (typedInitials == "**") {
 		hideTable()
-		
-		$('#noMatchingPlayers').html('Only one wildcard (*) character with a letter is permitted')
+		$('#numberMatchingPlayers').html('Only one wildcard (*) character with a letter is permitted')
 
 		return
-	}
-
-	if (setURL) {
-		window.location.assign("nba_initials.html?initials=" + enteredInits)
 	}
 
 
@@ -66,12 +86,12 @@ function showPlayers(setURL) {
 
 	if (playerList == null || playerList.length == 0) {
 		hideTable()
-
-		
-		$('#noMatchingPlayers').html('There are no matching NBA players for those initials :(')
+		$('#numberMatchingPlayers').html('There are no matching NBA players for those initials :(')
 
 		return
 	}
+
+	$('#numberMatchingPlayers').html(playerList.length + ' matching players found')
 
 	playerList.sort(function(first, second) {
 		var p1 = allPlayers[first]

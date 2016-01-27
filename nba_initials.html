@@ -20,33 +20,34 @@ Which NBA players share your initials
 </div>
 
 <div id="pageHeader">
-<h1>Which NBA Players Have Your Intials?</h1>
+<h1>Which NBA Players Have Your Initials?</h1>
 </div>
 <div class="main-text">Type in your initials: First, Last</div>
 <span data-tip="One wildcard (*) accepted">
 <input type="text" name="initials" id="initialsInput" maxlength="3" autofocus>
 </span>
 <br>
-<input type="submit" id="submitBtn" onclick="showPlayers(true)" value="Show Me The Players!" 
+<input type="submit" id="submitBtn" onclick="setUrlWithInitials()" value="Show Me The Players!" 
 class="pure-button">
 </div>
-
+<div id="totalFound">
+</div>
 <span id="matchingPlayersList"></span>
 
 <br>
 <br>
-<table border="0" cellpadding="0" width="100%" id="playersTable">
+<table border="0" cellpadding="0" width="100%" id="playersTable" style="display:none;">
 	<tr><td>Name</td><td>Years Played</td><td>Player Stats</td>
 	<td>School</td><td>Teams Played On</td><td>Career Points</td></tr>
 </table>
-<div id="noMatchingPlayers">
+<div id="numberMatchingPlayers">
 </div>
 <br>
 
 <div id="footer">All data pulled from <a href="http://www.basketball-reference.com/">
 www.basketball-reference.com</a>, Jan 2016</div>
 
-<div id="home-page-nav">
+<div id="home-page-nav" style="padding-top: 10px;">
 <a href="mailto:alexbudy@gmail.com.com?Subject=Regarding%20NBA%20Initials" target="_top">Contact</a> | <a href="/">Home Page</a>
 </div>
 

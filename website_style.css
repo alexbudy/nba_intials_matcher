@@ -28,5 +28,6 @@ p {
 
 #home-page-nav {
 	font-weight: bold;
-	text-align: right;
+	text-align: center;
+	font-size: 120%;
 }
