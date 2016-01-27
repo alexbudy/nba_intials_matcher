@@ -677,18 +677,3 @@ var initialsToPlayers = {
 'ZX' : [],
 'ZY' : [],
 'ZZ' : [4307,]}
-
-var counts = {}
-for (key in initialsToPlayers) {
-	counts[key] = initialsToPlayers[key].length
-}
-
-// Create items array
-var items = Object.keys(counts).map(function(key) {
-    return [key, counts[key]];
-});
-
-// Sort the array based on the second element
-items.sort(function(first, second) {
-    return second[1] - first[1];
-});

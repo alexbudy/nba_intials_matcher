@@ -30,11 +30,14 @@ $(document).ready(function() {
 	if (search.length > 0) {
 		var kv = search.substr(1).split('=')
 		if (kv.length==2 && kv[0] == 'initials') {
-			//if (re2.exec(kv[1]) != null) {
-				$('#initialsInput').val(kv[1])
-				showPlayers()
-			//}
+			$('#initialsInput').val(kv[1])
+			showPlayers()
+		} else if (kv.length==2 && kv[0] == 'breakdown') {
+			runFreqBreakdown(kv[1])
+		} else if (kv.length==2 && kv[0] == 'school') {
+			runSchoolBreakdown(kv[1])
 		}
+
 	}
 
     $('#initialsInput').keypress(function(key) {
@@ -58,18 +61,119 @@ $('#initialsInput').on('keyup', function(e) {
     }
 });
 
-$('#freqBreakdownUrl').on('click', function(e) {
+
+$('.breakdowns').on('click', function(e) {
+	window.location.assign("nba_initials.html?breakdown=" + e.target.id);	
+})
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
+
+function runSchoolBreakdown(school) {
+	var schoolKey = school.replaceAll("_", " ")
+	console.log(schoolKey)
+	
+	var players = []
+	for (var i = 0; i < allPlayers.length; i++) {
+		var playerSchool = allPlayers[i][8]
+		if (playerSchool == null) {
+			continue
+		} else {
+			playerSchool = playerSchool.replaceAll("'", "").replaceAll(".", "")
+		}
+
+		if (playerSchool.toUpperCase() == schoolKey.toUpperCase()) {
+			players.push(i)
+		}
+	}
+
+	showPlayerTable(players)
+
+	$('#numberMatchingPlayers').html(players.length + ' matching players found')
+}
+
+// possible breakdowns: initials, school
+function runFreqBreakdown(breakdown) {
 	hideTable();
 	$('#numberMatchingPlayers').hide()
-	$('#freqTable').show()
-})
+	
+	$('#breakdownTable').find("tr").remove();
+	
+	if (breakdown == 'breakdownInitials') {
+		$('#breakdownTable').append("<tr><td colspan=\"2\">Initial Counts of all NBA Players, Past and Present</td></tr>")
+
+		var counts = {}
+		for (key in initialsToPlayers) {
+			counts[key] = initialsToPlayers[key].length
+		}
+
+		// Create items array
+		var items = Object.keys(counts).map(function(key) {
+		    return [key, counts[key]];
+		});
+
+		// Sort the array based on the second element
+		items.sort(function(first, second) {
+		    return second[1] - first[1];
+		});
+
+		for (var i = 0; i < items.length; i++) {
+			var initials = items[i][0]
+			var count = items[i][1]
+			var row = "<tr><td><b>";
+			row += "<a href=\"./nba_initials.html?initials=" + initials + "\">" + initials + "</a>"
+			row += "</b></td><td> " + genStringBar(count) + "</td></tr>"
+			$('#breakdownTable').append(row)
+		}
+	} else if (breakdown == 'breakdownSchools') {
+		$('#breakdownTable').append("<tr><td colspan=\"2\">Schools by Number of NBA Players Attended, Past and Present</td></tr>")
+		var counts = {}
+
+		for (id in allPlayers) {
+			var school = allPlayers[id][8]
+			if (school in counts) {
+				counts[school]++;
+			} else {
+				counts[school] = 1;
+			}
+		}
+
+		// Create items array
+		var items = Object.keys(counts).map(function(key) {
+		    return [key, counts[key]];
+		});
+
+		// Sort the array based on the second element
+		items.sort(function(first, second) {
+		    return second[1] - first[1];
+		});
+
+		for (var i = 0; i < items.length; i++) {
+			var school = items[i][0]
+			if (school == 'null') continue
+			var count = items[i][1]
+			var row = "<tr><td><b><a href=\"./nba_initials.html?school=" + school.replaceAll(" ", "_").replaceAll("'","").replaceAll(".", "") + "\">" + school + "</a>";
+			row += "</b></td><td> " + genStringBar(count) + "</td></tr>"
+			$('#breakdownTable').append(row)
+		}
+	}
+	$('#breakdownTable').show()
+}
+
+// returns bar of length len, with number appended at end.  Ex:
+// ||||| 5
+function genStringBar(len) {
+	return Array(len+1).join('-') + " <b>" + len + "</b>" 
+}
 
 function hideTable() {
 	$('#playersTable').hide()
 }
 
 function showTable() {
-	$('#freqTable').hide()
+	$('#breakdownTable').hide()
 	$('#numberMatchingPlayers').show()
 	$('#playersTable').show()
 }
@@ -105,23 +209,29 @@ function showPlayers() {
 
 	$('#numberMatchingPlayers').html(playerList.length + ' matching players found')
 
-	playerList.sort(function(first, second) {
-		var p1 = allPlayers[first]
-		var p2 = allPlayers[second]
+	showPlayerTable(playerList)
+}
 
-		var firstScore = p1[11]
-		var secondScore = p2[11]
+function showPlayerTable(playerList) {
+	if (playerList.length > 1) {
+		playerList.sort(function(first, second) {
+			var p1 = allPlayers[first]
+			var p2 = allPlayers[second]
+			console.log(p1)
+			var firstScore = p1[11]
+			var secondScore = p2[11]
 
-		if (p1[10] != null) { // allows me to sort on two variables - might be better way
-			firstScore += 1000000
-		}
+			if (p1[10] != null) { // allows me to sort on two variables - might be better way
+				firstScore += 1000000
+			}
 
-		if (p2[10] != null) {
-			secondScore += 1000000
-		}
+			if (p2[10] != null) {
+				secondScore += 1000000
+			}
 
-		return secondScore - firstScore
-	});
+			return secondScore - firstScore
+		});
+	}
 	
 	$('#playersTable').show()
 	// clear table first
@@ -172,7 +282,7 @@ function genRowStr(player) {
 		bold = true;
 	}
 	return "<tr>" + genFullNameCell(player, bold) + genYrsPlayedCell(player, bold) +
-	genPlayerStats(player, bold) + genSimpleCell(player, 8) +	
+	genPlayerStats(player, bold) + genSchoolCell(player) +	
 	genTeamsPlayedOn(player, bold) + getTotalPtsCell(player, bold) + "</tr>"
 }
 
@@ -207,18 +317,6 @@ function getTotalPtsCell(player, bold) {
 	}
 }
 
-function genSimpleCell(player, idx, bold) {
-	if (player[idx] == null) {
-		return "<td></td>"
-	} else {
-		if (bold) {
-			return "<td><b>" + player[idx] + "<b></td>"
-		} else {
-			return "<td>" + player[idx] + "</td>"
-		}
-	}
-}
-
 function genPlayerStats(player, bold) {
 	if (bold) {
 		return "<td class=\"playerStatsCells\"><b>" + player[4] + " " + player[5] + "/" + player[6] + "</b></td>"
@@ -226,6 +324,16 @@ function genPlayerStats(player, bold) {
 		return "<td class=\"playerStatsCells\">" + player[4] + " " + player[5] + "/" + player[6] + "</td>"
 	}
 }
+
+function genSchoolCell(player) {
+	if (player[8] == null) {
+		return "<td></td>"
+	} else {
+		var schoolurl = "./nba_initials.html?school=" + player[8].replaceAll(" ", "_").replaceAll("'","").replaceAll(".", "")
+		var schoolLinkTag = "<a class=\"schoolUrlClass\" href=\"" + schoolurl + "\">" + player[8] + "</a>"
+		return "<td>" + schoolLinkTag + "</td>"
+	}
+} 
 
 function genTeamsPlayedOn(player, bold) {
 	s = "<td class=\"teamsPlayedOnCells\">"

@@ -44,11 +44,12 @@ tr:nth-child(odd) {
 	padding-bottom: 15px;
 }
 
-td:first-child{
+#playersTable td:first-child{
     -moz-border-radius:10px 0 0 10px;
     -webkit-border-radius:10px 0 0 10px;
 }
-td:last-child{
+
+#playersTable td:last-child{
     -moz-border-radius:0 10px 10px 0;
     -webkit-border-radius:0 10px 10px 0;
 }
@@ -102,30 +103,32 @@ td:last-child{
 	display:block;
 }
 
-table {
+#playersTable {
 	margin-left: auto;
 	margin-right: auto;
 	width: 80%;
 }
 
-tr td:not(4) {
+#playersTable tr td:not(4) {
 	white-space:nowrap;
 }
 
-td {
-	font-size: 110%;
+#playersTable td {
+	font-size: 130%;
 	text-align: center;
 	padding-left: 5px;
 	padding-right: 5px;
 
 }
 
-td a {
+#playersTable a :not(.schoolUrlClass){
 	font-size: 130%;
 }
 
+.schoolUrlClass { 
+}
+
 .playerLinks:link  {
-    color: #494949;
     background-color: transparent;
     text-decoration: none;
 }
@@ -142,7 +145,7 @@ td a {
     text-decoration: none;
 }
 
-#freqBreakdownUrl { 
+.breakdowns { 
 	display:inline-block;
 	padding-bottom: 10px; 
 	font-size: 115%;
@@ -150,4 +153,29 @@ td a {
 	cursor: hand;
 	color: #8d281a;
 	border: 1;
+}
+
+#breakdownTable {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+#breakdownTable tr:nth-child(1) {
+	text-align: center;
+	font-weight: bold;
+	font-size: 120%;
+	background-color: #c7c7c7;
+	color: #2f2f2f;
+}
+
+#breakdownTable tr:nth-child(1) td {
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+#breakdownTable tr:not(:first-child) td:first-child {
+	text-align: right;
 }
