@@ -36,6 +36,8 @@ $(document).ready(function() {
 			runFreqBreakdown(kv[1])
 		} else if (kv.length==2 && kv[0] == 'school') {
 			runSchoolBreakdown(kv[1])
+		} else if (kv.length==2 && kv[0] == 'team') {
+			runTeamBreakdown(kv[1])
 		}
 
 	}
@@ -73,7 +75,6 @@ String.prototype.replaceAll = function(search, replacement) {
 
 function runSchoolBreakdown(school) {
 	var schoolKey = school.replaceAll("_", " ")
-	console.log(schoolKey)
 	
 	var players = []
 	for (var i = 0; i < allPlayers.length; i++) {
@@ -86,6 +87,27 @@ function runSchoolBreakdown(school) {
 
 		if (playerSchool.toUpperCase() == schoolKey.toUpperCase()) {
 			players.push(i)
+		}
+	}
+
+	showPlayerTable(players)
+
+	$('#numberMatchingPlayers').html(players.length + ' matching players found')
+}
+
+function runTeamBreakdown(teamCode) {
+	var players = []
+	for (var i = 0; i < allPlayers.length; i++) {
+		var allTeams = allPlayers[i][12]
+		if (allTeams == null) {
+			continue
+		}
+
+		for (var j = 0; j < allTeams.length; j++) {
+			if (allTeams[j] == teamCode) {
+				players.push(i)
+				break
+			}
 		}
 	}
 
@@ -158,14 +180,54 @@ function runFreqBreakdown(breakdown) {
 			row += "</b></td><td> " + genStringBar(count) + "</td></tr>"
 			$('#breakdownTable').append(row)
 		}
+	} else if (breakdown == 'breakdownTeams') {
+		$('#breakdownTable').append("<tr><td colspan=\"2\">Teams by Number of NBA Players Ever on That Team</td></tr>")
+		var counts = {}
+
+		for (id in allPlayers) {
+			var teamsForPlayer = allPlayers[id][12]
+			if (teamsForPlayer == null) {
+				continue
+			}
+			for (idx in teamsForPlayer) {
+				var team = teamsForPlayer[idx]
+				if (team in counts) {
+					counts[team]++;
+				} else {
+					counts[team] = 1;
+				}
+			}
+		}
+
+		// Create items array
+		var items = Object.keys(counts).map(function(key) {
+		    return [key, counts[key]];
+		});
+
+		// Sort the array based on the second element
+		items.sort(function(first, second) {
+		    return second[1] - first[1];
+		});
+		for (var i = 0; i < items.length; i++) {
+			var team = items[i][0]
+			if (team == 'null') continue
+			var count = items[i][1]
+			var row = "<tr><td><b><a href=\"./nba_initials.html?team=" + team + "\">" + teams[team] + "</a>";
+			row += "</b></td><td> " + genStringBar(count, true) + "</td></tr>"
+			$('#breakdownTable').append(row)
+		}
 	}
 	$('#breakdownTable').show()
 }
 
 // returns bar of length len, with number appended at end.  Ex:
 // ||||| 5
-function genStringBar(len) {
-	return Array(len+1).join('-') + " <b>" + len + "</b>" 
+function genStringBar(len, byFive) {
+	if (byFive) {
+		return Array(Math.round((len+1)/5)).join('-') + " <b>" + len + "</b>"
+	} else {
+		return Array(len+1).join('-') + " <b>" + len + "</b>" 
+	}
 }
 
 function hideTable() {
@@ -217,7 +279,6 @@ function showPlayerTable(playerList) {
 		playerList.sort(function(first, second) {
 			var p1 = allPlayers[first]
 			var p2 = allPlayers[second]
-			console.log(p1)
 			var firstScore = p1[11]
 			var secondScore = p2[11]
 
@@ -283,7 +344,7 @@ function genRowStr(player) {
 	}
 	return "<tr>" + genFullNameCell(player, bold) + genYrsPlayedCell(player, bold) +
 	genPlayerStats(player, bold) + genSchoolCell(player) +	
-	genTeamsPlayedOn(player, bold) + getTotalPtsCell(player, bold) + "</tr>"
+	genTeamsPlayedOn(player) + getTotalPtsCell(player, bold) + "</tr>"
 }
 
 function genFullNameCell(player, bold) {
@@ -335,14 +396,10 @@ function genSchoolCell(player) {
 	}
 } 
 
-function genTeamsPlayedOn(player, bold) {
+function genTeamsPlayedOn(player) {
 	s = "<td class=\"teamsPlayedOnCells\">"
 	for (var i = (player[12].length - 1); i >= 0; i--) {
-		if (false && i == (player[12].length - 1)) { // not sure which team is active team for each player, so ignore bold for now
-			s += "<b>" + teams[player[12][i]][0] + "</b><br>"
-		} else {
-			s += teams[player[12][i]][0] + "<br>"
-		}
+		s += "<a class=\"teamLink\" href=\"./nba_initials.html?team=" + player[12][i] + "\">" + teams[player[12][i]][0] + "</a><br>"
 	}
 	s += "</td>"
 	return s

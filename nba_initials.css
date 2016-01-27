@@ -125,22 +125,51 @@ tr:nth-child(odd) {
 	font-size: 130%;
 }
 
-.schoolUrlClass { 
-}
 
-.playerLinks:link  {
+.schoolUrlClass:link  {
+    /*color: #494949;*/
     background-color: transparent;
     text-decoration: none;
 }
 
-.playerLinks:visited  {
-    color: #494949;
+.schoolUrlClass:hover {
+    color: red;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.playerLinks:link  {
+    /*color: #494949;*/
     background-color: transparent;
     text-decoration: none;
 }
 
 .playerLinks:hover {
     color: red;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.teamLink:link  {
+	color: #494949;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.teamLink:visited  {
+	color: #494949;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.teamLink:hover  {
+	color: red;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+.teamLink:active  {
+	color: red;
     background-color: transparent;
     text-decoration: none;
 }
